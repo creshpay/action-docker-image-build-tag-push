@@ -30,6 +30,10 @@ inputs:
     description: 'Flag (true/false) to tell if it is a merged PR or not'
     required: true
 
+  build-args:
+    description: 'Docker build args, newline-delimited string'
+    required: false
+
 runs:
   using: "composite"
   steps:
@@ -57,7 +61,7 @@ runs:
       shell: bash
       id: pre-meta
       run: |
-        if [[ ${{ inputs.action }} == "closed" && ${{ inputs.merged }} == "true" ]]; then
+        if [[ "${{ inputs.action }}" == "closed" && "${{ inputs.merged }}" == "true" ]]; then
           TAG_INPUT=type=raw,value=main'%0A'type=sha
         else
           TAG_INPUT=type=ref,event=branch'%0A'type=ref,event=pr'%0A'type=semver,pattern={{major}}'%0A'type=semver,pattern={{major}}.{{minor}}'%0A'type=semver,pattern={{major}}.{{minor}}.{{patch}}'%0A'type=sha
@@ -80,6 +84,7 @@ runs:
         labels: ${{ steps.meta.outputs.labels }}  
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
+        build-args: ${{ inputs.build-args }}
 
     - name: Move cache
       shell: bash
