@@ -1,0 +1,88 @@
+name: Build, tag and push a docker container to a registry
+
+inputs:
+  registry:
+    description: 'Container regisry'
+    required: false
+    default: ghcr.io
+    
+  username:
+    description: 'Registry username'
+    required: true
+
+  password:
+    description: 'Registry password'
+    required: true
+
+  image-name:
+    description: 'Docker image name'
+    required: true
+
+  github-sha:
+    description: 'Github sha'
+    required: true
+
+  action:
+    description: 'Github action that trigerred the worflow'
+    required: true
+
+  merged:
+    description: 'Flag (true/false) to tell if it is a merged PR or not'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Set up Docker Buildx (needed for caching)
+      uses: docker/setup-buildx-action@v1
+
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ inputs.github-sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
+    - name: Log in to the Container registry
+      uses: docker/login-action@v1
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ inputs.username }}
+        password: ${{ inputs.password }}
+
+
+    - name: Build metadata parameter
+      shell: bash
+      id: pre-meta
+      run: |
+        if [[ ${{ inputs.action }} == "closed" && ${{ inputs.merged }} == "true" ]]; then
+          TAG_INPUT=type=raw,value=main'%0A'type=sha
+        else
+          TAG_INPUT=type=ref,event=branch'%0A'type=ref,event=pr'%0A'type=semver,pattern={{major}}'%0A'type=semver,pattern={{major}}.{{minor}}'%0A'type=semver,pattern={{major}}.{{minor}}.{{patch}}'%0A'type=sha
+        fi
+        echo "::set-output name=tag_input::$TAG_INPUT"
+
+    - name: Extract metadata (tags, labels) for Docker for other cases
+      id: meta
+      uses: docker/metadata-action@v3
+      with:
+        images: ${{ inputs.registry }}/${{ inputs.image-name }}
+        tags: ${{ steps.pre-meta.outputs.tag_input }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}  
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+    - name: Move cache
+      shell: bash
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache  
