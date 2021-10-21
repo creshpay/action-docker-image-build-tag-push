@@ -1,0 +1,33 @@
+name: Create Github Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Tag to create (optional)'
+
+jobs:
+  create-git-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.CI_PUSH_TOKEN }}
+          fetch-depth: 0
+
+      - name: Enable GPG
+        uses: ./
+        with:
+          gpg-passphrase: "${{ secrets.CI_GPG_PASSPHRASE }}"
+          gpg-sign-key: "${{ secrets.CI_GPG_SIGN_KEY }}"
+          git-email: "${{ secrets.CI_USER_EMAIL }}"
+          git-username: "${{ secrets.CI_USER_NAME }}"
+          
+      - name: Create release
+        uses: cresh-io/action-conventional-release@v1
+        with:
+          custom-tag: "${{ github.event.inputs.tags }}"
+          github-access-token: "${{ secrets.CI_PUSH_TOKEN }}"
+          github-access-token-reviewer: "${{ github.token }}"
