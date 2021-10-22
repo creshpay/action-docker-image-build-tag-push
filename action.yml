@@ -70,7 +70,7 @@ runs:
         if [[ "${{ inputs.action }}" == "closed" && "${{ inputs.merged }}" == "true" ]]; then
           TAG_INPUT=type=raw,value=main'%0A'type=sha
         else
-          TAG_INPUT=type=ref,event=branch'%0A'type=ref,event=pr'%0A'type=semver,pattern={{major}}'%0A'type=semver,pattern={{major}}.{{minor}}'%0A'type=semver,pattern={{major}}.{{minor}}.{{patch}}'%0A'type=sha
+          TAG_INPUT=type=ref,event=branch'%0A'type=ref,event=pr'%0A'type=ref,event=pr,suffix=-{{sha}}'%0A'type=semver,pattern={{major}}'%0A'type=semver,pattern={{major}}.{{minor}}'%0A'type=semver,pattern={{major}}.{{minor}}.{{patch}}'%0A'type=sha
         fi
         echo "::set-output name=tag_input::$TAG_INPUT"
 
