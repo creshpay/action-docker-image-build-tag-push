@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/cresh-io/action-docker-image-build-tag-push/compare/v1.1.0...v1.2.0) (2021-11-23)
+
+
+### Features
+
+* add context input for switching build dir ([#4](https://github.com/cresh-io/action-docker-image-build-tag-push/issues/4)) ([7115786](https://github.com/cresh-io/action-docker-image-build-tag-push/commit/711578607edc7c096d6aea0745a7762ac4d6e71a))
+
 ## [1.1.0](https://github.com/cresh-io/action-docker-image-build-tag-push/compare/v1.0.0...v1.1.0) (2021-10-25)
 
 
