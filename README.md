@@ -62,5 +62,13 @@ steps:
 
   Used to intelligently define tags, set it to the `${{ github.event.pull_request.merged }}` value
 
+* **build-args** - required
+
+  Docker build arguments
+
+* **context** - required
+
+  Docker build context (path)
+
 ## License
 The scripts and documentation in this project are released under the [MIT License](LICENSE)

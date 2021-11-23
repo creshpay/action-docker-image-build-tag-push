@@ -3,7 +3,7 @@ name: Build, tag and push a docker container to a registry
 description: This action can build, tag and push a docker image to a registry (ghcr.io by defaults).
 
 branding:
-  icon: 'upload-cloud'  
+  icon: 'upload-cloud'
   color: 'purple'
 
 inputs:
@@ -11,7 +11,7 @@ inputs:
     description: 'Container regisry'
     required: false
     default: ghcr.io
-    
+
   username:
     description: 'Registry username'
     required: true
@@ -39,6 +39,11 @@ inputs:
   build-args:
     description: 'Docker build args, newline-delimited string'
     required: false
+
+  context:
+    description: "Build context (folder)"
+    required: false
+    default: .
 
 runs:
   using: "composite"
@@ -84,10 +89,10 @@ runs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
       with:
-        context: .
+        context: ${{ inputs.context }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
-        labels: ${{ steps.meta.outputs.labels }}  
+        labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=local,src=/tmp/.buildx-cache
         cache-to: type=local,dest=/tmp/.buildx-cache-new
         build-args: ${{ inputs.build-args }}
@@ -96,4 +101,4 @@ runs:
       shell: bash
       run: |
         rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache  
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
