@@ -66,9 +66,14 @@ steps:
 
   Docker build arguments
 
-* **context** - required
+* **context** - optional - default = .
 
   Docker build context (path)
 
+* **cache-type** - optional - default = local
+
+  Docker cache type, either inline or local or registry or gha
+
 ## License
+
 The scripts and documentation in this project are released under the [MIT License](LICENSE)

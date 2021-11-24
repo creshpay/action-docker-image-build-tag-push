@@ -45,6 +45,12 @@ inputs:
     required: false
     default: .
 
+  cache-type:
+    description: "Cache type (either inline or local or registry or gha)"
+    required: false
+    default: local
+
+
 runs:
   using: "composite"
   steps:
@@ -53,6 +59,7 @@ runs:
       uses: docker/setup-buildx-action@v1
 
     - name: Cache Docker layers
+      if: inputs.cache-type == 'local'
       uses: actions/cache@v2
       with:
         path: /tmp/.buildx-cache
@@ -67,7 +74,6 @@ runs:
         username: ${{ inputs.username }}
         password: ${{ inputs.password }}
 
-
     - name: Build metadata parameter
       shell: bash
       id: pre-meta
@@ -78,6 +84,26 @@ runs:
           TAG_INPUT=type=ref,event=branch'%0A'type=ref,event=pr'%0A'type=ref,event=pr,suffix=-{{sha}}'%0A'type=semver,pattern={{major}}'%0A'type=semver,pattern={{major}}.{{minor}}'%0A'type=semver,pattern={{major}}.{{minor}}.{{patch}}'%0A'type=sha
         fi
         echo "::set-output name=tag_input::$TAG_INPUT"
+
+    - name: Build cache parameters
+      shell: bash
+      id: pre-build
+      run: |
+        if [[ "${{ inputs.cache-type }}" == "inline" ]]; then
+          CACHE_FROM=type=registry,ref=${{ inputs.registry }}/${{ inputs.image-name }}:latest
+          CACHE_TO=type=inline
+        elif [[ "${{ inputs.cache-type }}" == "local" ]]; then
+          CACHE_FROM=type=local,src=/tmp/.buildx-cache
+          CACHE_TO=type=local,dest=/tmp/.buildx-cache-new
+        elif [[ "${{ inputs.cache-type }}" == "registry" ]]; then
+          CACHE_FROM=type=registry,ref=${{ inputs.registry }}/${{ inputs.image-name }}:buildcache
+          CACHE_TO=type=registry,ref=${{ inputs.registry }}/${{ inputs.image-name }}:buildcache,mode=max
+        elif [[ "${{ inputs.cache-type }}" == "gha" ]]; then
+          CACHE_FROM=type=gha
+          CACHE_TO=type=gha,mode=max
+        fi
+        echo "::set-output name=cache_from::$CACHE_FROM"
+        echo "::set-output name=cache_to::$CACHE_TO"
 
     - name: Extract metadata (tags, labels) for Docker for other cases
       id: meta
@@ -93,11 +119,12 @@ runs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache-new
+        cache-from: ${{ steps.pre-build.outputs.cache_from }}
+        cache-to: ${{ steps.pre-build.outputs.cache_to }}
         build-args: ${{ inputs.build-args }}
 
     - name: Move cache
+      if: inputs.cache-type == 'local'
       shell: bash
       run: |
         rm -rf /tmp/.buildx-cache
