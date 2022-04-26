@@ -50,6 +50,10 @@ inputs:
     required: false
     default: local
 
+outputs:
+  tags:
+    description: "Docker image tags"
+    value: ${{ steps.meta.outputs.tags }}
 
 runs:
   using: "composite"
