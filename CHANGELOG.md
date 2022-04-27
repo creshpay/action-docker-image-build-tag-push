@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/cresh-io/action-docker-image-build-tag-push/compare/v1.2.0...v1.3.0) (2022-04-27)
+
+
+### Features
+
+* add cache type input ([#5](https://github.com/cresh-io/action-docker-image-build-tag-push/issues/5)) ([0fa561d](https://github.com/cresh-io/action-docker-image-build-tag-push/commit/0fa561dc37f10ef84a655792f65c8638e9306b1b))
+
 ## [1.2.0](https://github.com/cresh-io/action-docker-image-build-tag-push/compare/v1.1.0...v1.2.0) (2021-11-23)
 
 
