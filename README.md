@@ -74,6 +74,30 @@ steps:
 
   Docker cache type, either inline or local or registry or gha
 
+## Outputs
+
+The tags attached to the build will be output for use later. For instance:
+
+```yml
+- name: Build, tag, push
+  id: btp
+  uses: cresh-io/action-docker-image-build-tag-push@v1
+  with:
+    registry: "${{ env.REGISTRY }}"
+    username: "${{ github.actor }}"
+    password: "${{ secrets.GITHUB_TOKEN }}"
+    image-name: "${{ github.repository }}"
+    github-sha: "${{ github.sha }}"
+    action: "${{ github.event.action }}"
+    merged: "${{ github.event.pull_request.merged }}"
+    build-args: |
+      NPM_TOKEN=${{ secrets.CI_NPM_TOKEN }}
+
+- name: debug
+  run: echo ${{ steps.btp.outputs.tags }}
+
+```
+
 ## License
 
 The scripts and documentation in this project are released under the [MIT License](LICENSE)
