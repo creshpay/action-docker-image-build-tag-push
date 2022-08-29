@@ -55,6 +55,16 @@ inputs:
     required: false
     default: local
 
+  tag-prefix:
+    description: "Tag prefix (eg. when using monorepo)"
+    required: false
+    default: ""
+
+  tag-suffix:
+    description: "Tag suffix (eg. when using monorepo)"
+    required: false
+    default: ""
+
 outputs:
   tags:
     description: "Docker image tags"
@@ -88,9 +98,9 @@ runs:
       id: pre-meta
       run: |
         if [[ "${{ inputs.action }}" == "closed" && "${{ inputs.merged }}" == "true" ]]; then
-          TAG_INPUT="type=raw,value=main\ntype=sha"
+          TAG_INPUT=type=raw,value=main,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=sha,prefix=${{ inputs.tag-prefix }}sha-,suffix=${{ inputs.tag-suffix }}
         else
-          TAG_INPUT="type=ref,event=branch\ntype=ref,event=pr\ntype=ref,event=pr,suffix=-{{sha}}\ntype=semver,pattern={{major}}\ntype=semver,pattern={{major}}.{{minor}}\ntype=semver,pattern={{major}}.{{minor}}.{{patch}}\ntype=sha"
+          TAG_INPUT=type=ref,event=branch,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=ref,event=pr,prefix=${{ inputs.tag-prefix }}pr-,suffix=${{ inputs.tag-suffix }}\ntype=ref,event=pr,prefix=${{ inputs.tag-prefix }}pr-,suffix=${{ inputs.tag-suffix }}-{{sha}}\ntype=semver,pattern={{major}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=semver,pattern={{major}}.{{minor}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=semver,pattern={{major}}.{{minor}}.{{patch}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=sha,prefix=${{ inputs.tag-prefix }}sha-,suffix=${{ inputs.tag-suffix }}
         fi
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
         echo "tag_input<<$EOF" >> $GITHUB_OUTPUT
