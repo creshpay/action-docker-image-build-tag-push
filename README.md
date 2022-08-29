@@ -28,6 +28,8 @@ steps:
     github-sha: "${{ github.sha }}"
     action: "${{ github.event.action }}"
     merged: "${{ github.event.pull_request.merged }}"
+    tag-prefix: "api-"
+    tag-suffix: "-rc0"
     build-args: |
       NPM_TOKEN=${{ secrets.CI_NPM_TOKEN }}
 ```
@@ -73,6 +75,14 @@ steps:
 * **cache-type** - optional - default = local
 
   Docker cache type, either inline or local or registry or gha
+
+* **tag-prefix** - optional - default = ""
+
+  Tag prefix (eg. when using monorepo)
+
+* **tag-suffix** - optional - default = ""
+
+  Tag suffix (eg. when using monorepo)
 
 ## Outputs
 
