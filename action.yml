@@ -83,11 +83,14 @@ runs:
       id: pre-meta
       run: |
         if [[ "${{ inputs.action }}" == "closed" && "${{ inputs.merged }}" == "true" ]]; then
-          TAG_INPUT=type=raw,value=main'%0A'type=sha
+          TAG_INPUT="type=raw,value=main\ntype=sha"
         else
-          TAG_INPUT=type=ref,event=branch'%0A'type=ref,event=pr'%0A'type=ref,event=pr,suffix=-{{sha}}'%0A'type=semver,pattern={{major}}'%0A'type=semver,pattern={{major}}.{{minor}}'%0A'type=semver,pattern={{major}}.{{minor}}.{{patch}}'%0A'type=sha
+          TAG_INPUT="type=ref,event=branch\ntype=ref,event=pr\ntype=ref,event=pr,suffix=-{{sha}}\ntype=semver,pattern={{major}}\ntype=semver,pattern={{major}}.{{minor}}\ntype=semver,pattern={{major}}.{{minor}}.{{patch}}\ntype=sha"
         fi
-        echo "::set-output name=tag_input::$TAG_INPUT"
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        echo "tag_input<<$EOF" >> $GITHUB_OUTPUT
+        echo -e $TAG_INPUT >> $GITHUB_OUTPUT
+        echo "$EOF" >> $GITHUB_OUTPUT
 
     - name: Build cache parameters
       shell: bash
@@ -106,15 +109,16 @@ runs:
           CACHE_FROM=type=gha
           CACHE_TO=type=gha,mode=max
         fi
-        echo "::set-output name=cache_from::$CACHE_FROM"
-        echo "::set-output name=cache_to::$CACHE_TO"
+        echo "cache_from=$CACHE_FROM" >> $GITHUB_OUTPUT
+        echo "cache_to=$CACHE_TO" >> $GITHUB_OUTPUT
 
     - name: Extract metadata (tags, labels) for Docker for other cases
       id: meta
-      uses: docker/metadata-action@v3
+      uses: docker/metadata-action@v4
       with:
         images: ${{ inputs.registry }}/${{ inputs.image-name }}
-        tags: ${{ steps.pre-meta.outputs.tag_input }}
+        tags: |
+          ${{ steps.pre-meta.outputs.tag_input }}
 
     - name: Build and push Docker image
       uses: docker/build-push-action@v2
