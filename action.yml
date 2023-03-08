@@ -64,7 +64,7 @@ runs:
 
     - name: Cache Docker layers
       if: inputs.cache-type == 'local'
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: /tmp/.buildx-cache
         key: ${{ runner.os }}-buildx-${{ inputs.github-sha }}
