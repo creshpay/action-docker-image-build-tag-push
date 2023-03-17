@@ -123,6 +123,7 @@ runs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v4
       with:
+        provenance: false
         context: ${{ inputs.context }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
