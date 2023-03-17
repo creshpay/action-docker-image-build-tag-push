@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/cresh-io/action-docker-image-build-tag-push/compare/v1.4.1...v1.5.0) (2023-03-17)
+
+
+### Features
+
+* remove provenance attestation for the build ([b28778a](https://github.com/cresh-io/action-docker-image-build-tag-push/commit/b28778a02030fb05b8df8f264ed2e85ae2ce0df7))
+
 ### [1.4.1](https://github.com/cresh-io/action-docker-image-build-tag-push/compare/v1.4.0...v1.4.1) (2023-03-08)
 
 
