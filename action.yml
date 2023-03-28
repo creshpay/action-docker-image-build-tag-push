@@ -20,6 +20,11 @@ inputs:
     description: 'Registry password'
     required: true
 
+  dockerfile:
+    description: 'Dockerfile path'
+    required: false
+    default: Dockerfile
+
   image-name:
     description: 'Docker image name'
     required: true
@@ -125,6 +130,7 @@ runs:
       with:
         provenance: false
         context: ${{ inputs.context }}
+        file: ${{ inputs.dockerfile }}
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
