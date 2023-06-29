@@ -30,6 +30,7 @@ steps:
     merged: "${{ github.event.pull_request.merged }}"
     tag-prefix: "api-"
     tag-suffix: "-rc0"
+    push: "false"
     build-args: |
       NPM_TOKEN=${{ secrets.CI_NPM_TOKEN }}
 ```
@@ -83,6 +84,10 @@ steps:
 * **tag-suffix** - optional - default = ""
 
   Tag suffix (eg. when using monorepo)
+
+* **push** - optional - default = "true"
+
+  Used to avoid push if needed
 
 ## Outputs
 
