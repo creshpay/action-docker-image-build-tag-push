@@ -70,6 +70,11 @@ inputs:
     required: false
     default: "true"
 
+  version-pattern:
+    description: "Match version pattern to find semver version in prefixed tags"
+    required: false
+    default: ""
+
 outputs:
   tags:
     description: "Docker image tags"
@@ -103,14 +108,17 @@ runs:
       id: pre-meta
       run: |
         if [[ "${{ inputs.action }}" == "closed" && "${{ inputs.merged }}" == "true" ]]; then
-          TAG_INPUT=type=raw,value=main,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=sha,prefix=${{ inputs.tag-prefix }}sha-,suffix=${{ inputs.tag-suffix }}
+          TAG_INPUT="type=raw,value=main,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=sha,prefix=${{ inputs.tag-prefix }}sha-,suffix=${{ inputs.tag-suffix }}"
         else
-          TAG_INPUT=type=ref,event=branch,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=ref,event=pr,prefix=${{ inputs.tag-prefix }}pr-,suffix=${{ inputs.tag-suffix }}\ntype=ref,event=pr,prefix=${{ inputs.tag-prefix }}pr-,suffix=${{ inputs.tag-suffix }}-{{sha}}\ntype=semver,pattern={{major}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=semver,pattern={{major}}.{{minor}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=semver,pattern={{major}}.{{minor}}.{{patch}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=sha,prefix=${{ inputs.tag-prefix }}sha-,suffix=${{ inputs.tag-suffix }}
+          TAG_INPUT="type=ref,event=branch,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=ref,event=pr,prefix=${{ inputs.tag-prefix }}pr-,suffix=${{ inputs.tag-suffix }}\ntype=ref,event=pr,prefix=${{ inputs.tag-prefix }}pr-,suffix=${{ inputs.tag-suffix }}-{{sha}}\ntype=semver,enable=${SEMVER},pattern={{major}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=semver,enable=${SEMVER},pattern={{major}}.{{minor}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=semver,enable=${SEMVER},pattern={{major}}.{{minor}}.{{patch}},prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=match,enable=${PATTERN},pattern=${{ inputs.version-pattern }}(\d+),group=1,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=match,enable=${PATTERN},pattern=${{ inputs.version-pattern }}(\d+.\d+),group=1,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=match,enable=${PATTERN},pattern=${{ inputs.version-pattern }}(\d+.\d+.\d+),group=1,prefix=${{ inputs.tag-prefix }},suffix=${{ inputs.tag-suffix }}\ntype=sha,prefix=${{ inputs.tag-prefix }}sha-,suffix=${{ inputs.tag-suffix }}"
         fi
         EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
         echo "tag_input<<$EOF" >> $GITHUB_OUTPUT
         echo -e $TAG_INPUT >> $GITHUB_OUTPUT
         echo "$EOF" >> $GITHUB_OUTPUT
+      env:
+        SEMVER: ${{ inputs.version-pattern == '' }}
+        PATTERN: ${{ inputs.version-pattern != '' }}
 
     - name: Build cache parameters
       shell: bash
