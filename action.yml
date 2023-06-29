@@ -65,6 +65,11 @@ inputs:
     required: false
     default: ""
 
+  push:
+    description: "Allow to disable image push"
+    required: false
+    default: "true"
+
 outputs:
   tags:
     description: "Docker image tags"
@@ -141,7 +146,7 @@ runs:
         provenance: false
         context: ${{ inputs.context }}
         file: ${{ inputs.dockerfile }}
-        push: true
+        push: ${{ inputs.push == 'true' }}
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: ${{ steps.pre-build.outputs.cache_from }}
