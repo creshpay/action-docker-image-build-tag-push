@@ -31,6 +31,7 @@ steps:
     tag-prefix: "api-"
     tag-suffix: "-rc0"
     push: "false"
+    version-pattern: "my-awesome-app-v"
     build-args: |
       NPM_TOKEN=${{ secrets.CI_NPM_TOKEN }}
 ```
@@ -88,6 +89,12 @@ steps:
 * **push** - optional - default = "true"
 
   Used to avoid push if needed
+
+* **version-pattern** - optional - default = ""
+
+  Match version pattern to find semver version in prefixed tags. For instance if your tags are like `my-awesome-app-v1.0.0` set `version-pattern` to `my-awesome-app-v` to catch tags `1`, `1.0` and `1.0.1`.
+
+  You can also use regex like `my-.*-v`.
 
 ## Outputs
 
