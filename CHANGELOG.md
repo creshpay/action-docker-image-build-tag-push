@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/creshpay/action-docker-image-build-tag-push/compare/v1.5.0...v1.6.0) (2023-06-30)
+
+
+### Features
+
+* allow to add tag prefix and suffix ([18eadfb](https://github.com/creshpay/action-docker-image-build-tag-push/commit/18eadfb9ec7e7dbb08325a804181a76a7a388e3c))
+* allow to disable push ([070450c](https://github.com/creshpay/action-docker-image-build-tag-push/commit/070450c1a05a01f3348d68867360153e5ee5395f))
+* allow to use another dockerfile ([cc3a7b6](https://github.com/creshpay/action-docker-image-build-tag-push/commit/cc3a7b6ce7dd50123d1cb223d1ea966595379bc6))
+* allow to use version-pattern to look for tags ([67b654e](https://github.com/creshpay/action-docker-image-build-tag-push/commit/67b654e9eb8c2406651ca52e41f6d40b3d6e0b9c))
+
 ## [1.5.0](https://github.com/cresh-io/action-docker-image-build-tag-push/compare/v1.4.1...v1.5.0) (2023-03-17)
 
 
